@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %} Review Article {% endblock %}
+
+{% block content %}
+<div class="list-group">
+	{% for article in articles %}
+	<div class="list-group-item list-group-item-action flex-column align-items-start">
+        <div class="d-flex w-100 justify-content-between">
+          <h5 class="mb-1">{{ article.title }}</h5>
+          <div class="float-right"> 
+          <small class="text-muted">{{ article.created_at }}</small>
+          </div>
+        </div><br/>
+        <p class="mb-1">{{article.content|linebreaks}}</p>
+        {% if article.is_in_review %}
+        <a href="{{ request.path }}" class="btn btn-success post_link" article_id="{{ article.id }}" confirm_message="Are you sure want to approve this article?">Approve</a>
+        {% endif %}
+
+        {% if article.is_approved %}
+          <p>Article has been approved</p>
+        {% endif %}
+      </div>
+	{% endfor %}
+</div>
+{% endblock %}

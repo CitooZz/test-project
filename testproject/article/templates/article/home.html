@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %} Home {% endblock %}
+
+{% block content %}
+<div class="list-group">
+	{% for article in articles %}
+	<div class="list-group-item list-group-item-action flex-column align-items-start">
+        <div class="d-flex w-100 justify-content-between">
+          <h5 class="mb-1">{{ article.title }}</h5>
+          <div class="float-right"> 
+          <small class="text-muted">{{ article.created_at }}</small>
+          </div>
+        </div><br/>
+        <p class="mb-1">{{article.content|linebreaks}}</p>
+        {% if request.user.is_writer %}
+        <a href="{{ request.path }}" class="btn btn-primary post_link" article_id="{{ article.id }}" confirm_message="Are you sure want to assign this article?">Assign to me</a>
+        {% endif %}
+      </div>
+	{% endfor %}
+</div>
+{% endblock %}

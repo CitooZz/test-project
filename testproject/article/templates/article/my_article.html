@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% block title %} My Article {% endblock %}
+{% block content %}
+<div class="list-group">
+    {% for article in articles %}
+    <div class="list-group-item list-group-item-action flex-column align-items-start">
+        <div class="d-flex w-100 justify-content-between">
+            <h5 class="mb-1">{{ article.title }}</h5>
+            <div class="float-right"> 
+                <small class="text-muted">{{ article.created_at }}</small>
+            </div>
+        </div>
+        <br/>
+        <p class="mb-1">{{article.content|linebreaks}}</p>
+        {% if not article.is_in_review %}
+          {% if article.is_completed %}
+            <a href="{{ request.path }}" class="btn btn-success post_link" article_id="{{ article.id }}" confirm_message="Are you sure send this article to review?">Send to review</a>
+          {% else%}
+            <a href="" article_id="{{ article.id }}" data-toggle="modal" data-target="#addLinkModal" class="btn btn-primary">Add link to Google doc</a>
+          {% endif %}
+        {% else %}
+          <p>This article in Review</p>
+        {% endif %}
+        {% if article.is_approved %}
+          <p>This articled has been approved</p>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
+{% block extra_content %}
+<!-- Modal -->
+<div class="modal fade" id="addLinkModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Add link to a Google Doc</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form method="POST" action="{% url 'article:add_google_doc_link' %}">
+              {% csrf_token %}
+              <input type="hidden" name="article_id" id="id_article_id">
+              <div class="modal-body">
+                  <input type="text" name="google_doc_link" class="form-control" required>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  <button type="submit" class="btn btn-primary">Add</button>
+              </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+  <script type="text/javascript">
+    $(function(){
+      $(window).on('shown.bs.modal', function(event) { 
+        $('#id_article_id').val($(event.relatedTarget).attr('article_id'))
+      });
+
+      $(window).on('hidden.bs.modal', function(event) { 
+        $('#id_article_id').val('')
+      });
+
+    })
+  </script>
+{% endblock %}
